@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+import "common.proto";
+
+// 成绩表
+message TGrade {
+  uint32 Id = 1;    // ID
+  string Name = 2;  // 名字
+  string Desc = 3;  // 描述
+  float Score = 4;  // 分数
+  Time Time = 5;    // 时间
+  uint32 Rank = 6;  // 评价
+}
+
+// 成绩配置
+message CGrade {
+  int32 Max = 1;    // 最大值
+  int32 Min = 2;    // 最小值
+}

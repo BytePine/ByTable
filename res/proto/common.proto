@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+// 日期
+message Date {
+  uint32 Year = 1;    // 年
+  uint32 Month = 2;   // 月
+  uint32 Day = 3;     // 日
+}
+
+// 时间
+message Time {
+  uint32 Hour = 1;    // 时
+  uint32 Min = 2;     // 分
+  uint32 Sec = 3;     // 秒
+}
+
+// 日期时间
+message DateTime {
+  Date Date = 1;      // 日期
+  Time Time = 2;      // 时间
+}
+
+// 文字
+message Text {
+  string String = 1;  // 文本
+}
