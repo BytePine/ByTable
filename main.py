@@ -1,13 +1,10 @@
 import logging
 
-from src.load import Load
-from src.load.param import LoadParam
+from excel import load_excel
 
 logging.basicConfig(level=logging.DEBUG,
                     format='%(levelname)s: %(message)s')
 
 if __name__ == '__main__':
-    # 加载参数
-    load_param = LoadParam()
-    # 加载资源
-    Load(load_param)
+    # 加载表格
+    load_excel("D:/Dev/ByTable/res/excel")
