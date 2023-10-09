@@ -17,31 +17,31 @@ class DataManager:
     def push_list(self, data_list: list[Data]):
         for data in data_list:
             if data.kind == DataKind.Table:
-                self.push_table(type(Table)(data))
+                self.push_table(data)
             elif data.kind == DataKind.Config:
-                self.push_config(type(Config)(data))
-            elif data.kind == DataKind.Enumerate:
-                self.push_enumerate(type(Enumerate)(Data))
+                self.push_config(data)
+            elif data.kind == DataKind.Enum:
+                self.push_enumerate(data)
 
-    def push_table(self, data: Table):
+    def push_table(self, data):
         name = data.name
-        table_list = self.tables[name]
+        table_list = self.tables.get(name)
         if table_list is None:
             table_list = list()
             self.tables[name] = table_list
         table_list.append(data)
 
-    def push_config(self, data: Config):
+    def push_config(self, data):
         name = data.name
-        config_list = self.configs[name]
+        config_list = self.configs.get(name)
         if config_list is None:
             config_list = list()
             self.configs[name] = config_list
         config_list.append(data)
 
-    def push_enumerate(self, data: Enumerate):
+    def push_enumerate(self, data):
         name = data.name
-        enumerate_list = self.enumerates[name]
+        enumerate_list = self.enumerates.get(name)
         if enumerate_list is None:
             enumerate_list = list()
             self.enumerates[name] = enumerate_list

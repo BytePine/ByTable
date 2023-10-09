@@ -1,5 +1,3 @@
-import re
-
 from engine import Engine, EngineConfig
 from excel_proto.excel import ExcelFile
 

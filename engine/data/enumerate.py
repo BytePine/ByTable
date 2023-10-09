@@ -1,4 +1,4 @@
-from . import Data
+from . import Data, DataKind
 
 
 class EnumerateRow:
@@ -10,3 +10,8 @@ class EnumerateRow:
 
 class Enumerate(Data):
     rows: list[EnumerateRow]
+
+    def __init__(self, name: str):
+        super().__init__(name)
+        self.kind = DataKind.Enum
+        self.rows = list()
