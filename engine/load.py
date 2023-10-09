@@ -1,4 +1,3 @@
-from . import singleton
 from .data import DataManager
 
 
@@ -12,7 +11,6 @@ class LoadFile:
         pass
 
 
-@singleton
 class LoadManager:
     load_files: list[LoadFile]
     data_manager: DataManager
@@ -21,10 +19,9 @@ class LoadManager:
         self.load_files = list()
         self.data_manager = DataManager()
 
-    def push_file(self, load_file: LoadFile):
-        self.load_files.append(load_file)
-
-    def load_all(self):
+    def load_all(self, cls, files: [str]):
+        for file in files:
+            self.load_files.append(cls(file))
         for load_file in self.load_files:
             data_list = load_file.on_load()
             self.data_manager.push_list(data_list)

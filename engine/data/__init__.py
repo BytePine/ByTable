@@ -1,35 +1,9 @@
-from enum import Enum
-from .. import singleton
-from table import Table
-from config import Config
-from enumerate import Enumerate
+from .base import Data, DataKind
+from .table import Table
+from .config import Config
+from .enumerate import Enumerate
 
 
-class DataKind(Enum):
-    Error = 0
-    Table = 1
-    Config = 2
-    Enumerate = 3
-    Check = 4
-
-
-class ValueKind(Enum):
-    Null = 0
-    Number = 1
-    String = 2
-
-
-class Data:
-    name: str
-    kind: DataKind
-
-
-class Value:
-    meta: None
-    kind: ValueKind
-
-
-@singleton
 class DataManager:
     tables: dict[str, list[Table]]
     configs: dict[str, list[Config]]

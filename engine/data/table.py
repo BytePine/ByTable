@@ -1,4 +1,4 @@
-from . import Data, Value
+from .base import Value, Data
 
 
 class TableRow:
