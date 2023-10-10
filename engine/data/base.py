@@ -30,6 +30,15 @@ class Data:
         self.name = name
 
 
+class Head:
+    key: str
+    desc: str
+
+    def __str__(self):
+        return f"{self.key}({self.desc})"
+    
+
 class Value:
+    head: Head
     meta: None
     kind: ValueKind

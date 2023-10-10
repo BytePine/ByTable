@@ -7,12 +7,24 @@ from openpyxl.worksheet.worksheet import Worksheet
 from engine.data import Table, Config, Enumerate
 from engine.data.check import Check
 from engine.load import LoadFile
-from engine.data.base import string_to_kind, DataKind
+from engine.data.base import string_to_kind, DataKind, Head
+
+
+def get_cell(cell: Cell):
+    value = cell.value
+
+    if value is None:
+        return None
+
+    if value.startswith("#"):
+        return None
+
+    return value
 
 
 def to_data(ws: Worksheet):
     info_cell: Cell = ws.cell(1, 1)
-    cell_value = info_cell.value
+    cell_value = get_cell(info_cell)
     if cell_value is None:
         return None
     match = re.match(r"(.*)<(.*)>", cell_value)
@@ -33,6 +45,35 @@ def to_data(ws: Worksheet):
 
 def to_table(name: str, ws: Worksheet):
     table = Table(name)
+
+    # Key
+    key_dict: dict[int, str] = dict()
+    key_row = next(ws.iter_rows(2))
+    for cell in key_row:
+        cell_str = get_cell(cell)
+        if cell_str:
+            key_dict[cell.col_idx] = cell_str
+
+    # Desc
+    desc_dict: dict[int, str] = dict()
+    desc_row = next(ws.iter_rows(3))
+    for cell in desc_row:
+        if cell.col_idx in key_dict.keys():
+            desc_dict[cell.col_idx] = get_cell(cell)
+
+    # Head
+    head_dict: dict[int, Head] = dict()
+    for key in key_dict.keys():
+        head = Head()
+        head.key = key_dict.get(key)
+        head.desc = desc_dict.get(key)
+        head_dict[key] = head
+    print(head_dict)
+
+    # Values
+    # for value_row in ws.iter_rows(4):
+    #     print(value_row)
+
     return table
 
 
