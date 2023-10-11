@@ -6,19 +6,19 @@ from openpyxl.worksheet.worksheet import Worksheet
 
 from engine.data import Table, Config, Enumerate
 from engine.data.check import Check
+from engine.data.table import TableRow
 from engine.load import LoadFile
-from engine.data.base import string_to_kind, DataKind, Head
+from engine.data.base import string_to_data_kind, DataKind, Head, Value, data_type_to_value_kind
 
 
 def get_cell(cell: Cell):
     value = cell.value
-
     if value is None:
         return None
-
+    if cell.data_type != "s":
+        return value
     if value.startswith("#"):
         return None
-
     return value
 
 
@@ -30,7 +30,7 @@ def to_data(ws: Worksheet):
     match = re.match(r"(.*)<(.*)>", cell_value)
     if match and len(match.groups()) != 2:
         return None
-    kind = string_to_kind(match.group(1))
+    kind = string_to_data_kind(match.group(1))
     name = match.group(2)
     if kind == DataKind.Table:
         return to_table(name, ws)
@@ -68,12 +68,21 @@ def to_table(name: str, ws: Worksheet):
         head.key = key_dict.get(key)
         head.desc = desc_dict.get(key)
         head_dict[key] = head
-    print(head_dict)
 
     # Values
-    # for value_row in ws.iter_rows(4):
-    #     print(value_row)
+    row_list: list[TableRow] = list()
+    for value_row in ws.iter_rows(4):
+        table_row = TableRow()
+        row_list.append(table_row)
+        for cell in value_row:
+            if cell.col_idx in head_dict.keys():
+                value = Value()
+                value.head = head_dict[cell.col_idx]
+                value.meta = get_cell(cell)
+                value.kind = data_type_to_value_kind(cell.data_type)
+                table_row.set_value(value)
 
+    table.rows = row_list
     return table
 
 
@@ -102,5 +111,5 @@ class ExcelFile(LoadFile):
         for ws in wb:
             data = to_data(ws)
             if data is not None:
-                print(data.name, data.kind)
+                print(data)
                 yield data

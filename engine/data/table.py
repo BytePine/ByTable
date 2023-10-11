@@ -2,14 +2,13 @@ from .base import Value, Data, DataKind
 
 
 class TableRow:
-    id: int
     elements: dict[str, Value]
 
     def __init__(self):
         self.elements = dict()
 
-    def __contains__(self, item):
-        return self.id == item.id
+    def set_value(self, value: Value):
+        self.elements[value.head.key] = value
 
 
 class Table(Data):
@@ -19,3 +18,8 @@ class Table(Data):
         super().__init__(name)
         self.kind = DataKind.Table
         self.rows = list()
+
+    def __str__(self):
+        data_str = super().__str__()
+        return f"{data_str} rows:{len(self.rows)}"
+    
