@@ -2,6 +2,7 @@ import re
 
 import openpyxl
 from openpyxl.cell import Cell
+from openpyxl.workbook import Workbook
 from openpyxl.worksheet.worksheet import Worksheet
 
 from engine.data import Table, Config, Enumerate
@@ -20,6 +21,32 @@ def get_cell(cell: Cell):
     if value.startswith("#"):
         return None
     return value
+
+
+def get_head_dict(ws: Worksheet):
+    # Key
+    key_dict: dict[int, str] = dict()
+    key_row = next(ws.iter_rows(2))
+    for cell in key_row:
+        cell_str = get_cell(cell)
+        if cell_str:
+            key_dict[cell.col_idx] = cell_str
+
+    # Desc
+    desc_dict: dict[int, str] = dict()
+    desc_row = next(ws.iter_rows(3))
+    for cell in desc_row:
+        if cell.col_idx in key_dict.keys():
+            desc_dict[cell.col_idx] = get_cell(cell)
+
+    # Head
+    head_dict: dict[int, Head] = dict()
+    for idx in key_dict.keys():
+        head = Head(idx)
+        head.set_key(key_dict.get(idx))
+        head.set_desc(desc_dict.get(idx))
+        head_dict[idx] = head
+    return head_dict
 
 
 def to_data(ws: Worksheet):
@@ -46,28 +73,8 @@ def to_data(ws: Worksheet):
 def to_table(name: str, ws: Worksheet):
     table = Table(name)
 
-    # Key
-    key_dict: dict[int, str] = dict()
-    key_row = next(ws.iter_rows(2))
-    for cell in key_row:
-        cell_str = get_cell(cell)
-        if cell_str:
-            key_dict[cell.col_idx] = cell_str
-
-    # Desc
-    desc_dict: dict[int, str] = dict()
-    desc_row = next(ws.iter_rows(3))
-    for cell in desc_row:
-        if cell.col_idx in key_dict.keys():
-            desc_dict[cell.col_idx] = get_cell(cell)
-
     # Head
-    head_dict: dict[int, Head] = dict()
-    for key in key_dict.keys():
-        head = Head()
-        head.key = key_dict.get(key)
-        head.desc = desc_dict.get(key)
-        head_dict[key] = head
+    head_dict = get_head_dict(ws)
 
     # Values
     row_list: list[TableRow] = list()
@@ -76,18 +83,26 @@ def to_table(name: str, ws: Worksheet):
         row_list.append(table_row)
         for cell in value_row:
             if cell.col_idx in head_dict.keys():
-                value = Value()
-                value.head = head_dict[cell.col_idx]
-                value.meta = get_cell(cell)
-                value.kind = data_type_to_value_kind(cell.data_type)
+                value = Value(head_dict[cell.col_idx])
+                value.set_kind(data_type_to_value_kind(cell.data_type))
+                value.set_meta(get_cell(cell))
                 table_row.set_value(value)
 
-    table.rows = row_list
+    table.set_rows(row_list)
     return table
 
 
 def to_config(name: str, ws: Worksheet):
     config = Config(name)
+
+    # Head
+    head_dict = get_head_dict(ws)
+
+    # Values
+    elements: dict[str, Value] = dict()
+    for value_row in ws.iter_rows(4):
+        pass
+
     return config
 
 
@@ -107,9 +122,10 @@ class ExcelFile(LoadFile):
 
     def on_load(self) -> []:
         print(self.path)
-        wb = openpyxl.load_workbook(self.path)
+        wb: Workbook = openpyxl.load_workbook(self.path)
         for ws in wb:
             data = to_data(ws)
             if data is not None:
                 print(data)
                 yield data
+        wb.close()

@@ -9,9 +9,9 @@ class EnumerateRow:
 
 
 class Enumerate(Data):
-    rows: list[EnumerateRow]
+    _rows: list[EnumerateRow]
 
     def __init__(self, name: str):
         super().__init__(name)
-        self.kind = DataKind.Enum
-        self.rows = list()
+        self._kind = DataKind.Enum
+        self._rows = list()
