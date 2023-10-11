@@ -98,11 +98,38 @@ def to_config(name: str, ws: Worksheet):
     # Head
     head_dict = get_head_dict(ws)
 
+    # Key
+    key_idx_dict: dict[str: int] = dict()
+    for head in head_dict.values():
+        key_idx_dict[head.key] = head.idx - 1
+
     # Values
     elements: dict[str, Value] = dict()
-    for value_row in ws.iter_rows(4):
-        pass
+    row_idx = 4
+    for value_row in ws.iter_rows(row_idx):
+        config_head: Head = Head(row_idx)
+        value = Value(config_head)
+        key_idx = key_idx_dict.get("Key")
+        if key_idx is None:
+            continue
+        value_key = get_cell(value_row[key_idx])
+        if value_key is None:
+            continue
+        value_key = str(value_key)
+        config_head.set_key(value_key)
+        desc_idx = key_idx_dict.get("Desc")
+        if desc_idx:
+            value_desc = get_cell(value_row[desc_idx])
+            config_head.set_desc(str(value_desc))
+        value_idx = key_idx_dict.get("Value")
+        if value_idx:
+            value_cell = value_row[value_idx]
+            value.set_meta(get_cell(value_cell))
+            value.set_kind(data_type_to_value_kind(value_cell.data_type))
+        elements[value_key] = value
+        row_idx += 1
 
+    config.set_elements(elements)
     return config
 
 
