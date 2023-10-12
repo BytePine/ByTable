@@ -7,6 +7,7 @@ from openpyxl.worksheet.worksheet import Worksheet
 
 from engine.data import Table, Config, Enumerate
 from engine.data.check import Check
+from engine.data.enumerate import EnumerateRow
 from engine.data.table import TableRow
 from engine.load import LoadFile
 from engine.data.base import string_to_data_kind, DataKind, Head, Value, data_type_to_value_kind
@@ -135,6 +136,38 @@ def to_config(name: str, ws: Worksheet):
 
 def to_enumerate(name: str, ws: Worksheet):
     enum = Enumerate(name)
+
+    # Head
+    head_dict = get_head_dict(ws)
+
+    # Key
+    key_idx_dict: dict[str: int] = dict()
+    for head in head_dict.values():
+        key_idx_dict[head.key] = head.idx - 1
+
+    # Values
+    elements: dict[str, EnumerateRow] = dict()
+    for value_row in ws.iter_rows(4):
+        key_idx = key_idx_dict.get("Key")
+        if key_idx is None:
+            continue
+        value_key = get_cell(value_row[key_idx])
+        if value_key is None:
+            continue
+        value_key = str(value_key)
+        element = EnumerateRow(value_key)
+        desc_idx = key_idx_dict.get("Desc")
+        if desc_idx:
+            element.set_desc(str(get_cell(value_row[desc_idx])))
+        value_idx = key_idx_dict.get("Value")
+        if value_idx:
+            element.set_value(int(get_cell(value_row[value_idx])))
+        text_idx = key_idx_dict.get("Text")
+        if text_idx:
+            element.set_text(str(get_cell(value_row[text_idx])))
+        elements[value_key] = element
+
+    enum.set_elements(elements)
     return enum
 
 
