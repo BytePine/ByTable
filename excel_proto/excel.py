@@ -6,7 +6,6 @@ from openpyxl.workbook import Workbook
 from openpyxl.worksheet.worksheet import Worksheet
 
 from engine.data import Table, Config, Enumerate
-from engine.data.check import Check
 from engine.data.enumerate import EnumerateRow
 from engine.data.table import TableRow
 from engine.load import LoadFile
@@ -66,8 +65,6 @@ def to_data(ws: Worksheet):
         return to_config(name, ws)
     elif kind == DataKind.Enum:
         return to_enumerate(name, ws)
-    elif kind == DataKind.Check:
-        return to_check(name, ws)
     return None
 
 
@@ -169,11 +166,6 @@ def to_enumerate(name: str, ws: Worksheet):
 
     enum.set_elements(elements)
     return enum
-
-
-def to_check(name: str, ws: Worksheet):
-    check = Check(name)
-    return check
 
 
 class ExcelFile(LoadFile):

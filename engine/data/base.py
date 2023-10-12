@@ -6,7 +6,6 @@ class DataKind(Enum):
     Table = 1
     Config = 2
     Enum = 3
-    Check = 4
 
 
 def string_to_data_kind(kind: str):
