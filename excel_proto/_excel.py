@@ -5,11 +5,21 @@ from openpyxl.cell import Cell
 from openpyxl.workbook import Workbook
 from openpyxl.worksheet.worksheet import Worksheet
 
-from engine.data import Table, Config, Enumerate
-from engine.data.enumerate import EnumerateRow
-from engine.data.table import TableRow
+from engine._data import Table, Config, Enumerate
+from engine._data.enumerate import EnumerateRow
+from engine._data.table import TableRow
 from engine.load import LoadFile
-from engine.data.base import string_to_data_kind, DataKind, Head, Value, data_type_to_value_kind
+from engine._data.base import string_to_data_kind, DataKind, Head, Value, ValueKind
+
+
+def data_type_to_value_kind(data_type: str):
+    if data_type == 's':
+        return ValueKind.String
+    elif data_type == 'n':
+        return ValueKind.Number
+    elif data_type == 'd':
+        return ValueKind.DateTime
+    return ValueKind.Null
 
 
 def get_cell(cell: Cell):

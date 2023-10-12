@@ -1,4 +1,4 @@
-from .data import DataManager
+from engine.data import DataManager
 
 
 class LoadFile:
