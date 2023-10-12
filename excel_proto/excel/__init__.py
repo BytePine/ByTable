@@ -14,8 +14,6 @@ from engine.data.base import string_to_data_kind, DataKind, Head, Value, data_ty
 
 def get_cell(cell: Cell):
     value = cell.value
-    if value is None:
-        return None
     if cell.data_type != "s":
         return value
     if value.startswith("#"):
